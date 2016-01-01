@@ -26,7 +26,7 @@
 ;-----------------------------------------------------------------------------
 .code
 load_instruction_from_memory:
-	load ?currinst, ?pc, data	; load the current instruction into the currinst register
+	load ?currinst = ?pc, data	; load the current instruction into the currinst register
 decode_instruction:
 	
 
