@@ -36,30 +36,6 @@
 .alias micro-pred = r4
 .alias micro-cp = r5
 ;-----------------------------------------------------------------------------
-; Now with the register conventions as described by msp430, I use the m prefix
-; to denote that these are msp430 registers
-;-----------------------------------------------------------------------------
-.alias pc = r6
-.alias m0 = r6
-.alias sp = r7
-.alias m1 = r7
-.alias status = r8
-.alias m2 = r8
-.alias cgen = r9
-.alias m3 = r9
-.alias m4 = r10
-.alias m5 = r11
-.alias m6 = r12
-.alias m7 = r13
-.alias m8 = r14
-.alias m9 = r15
-.alias m10 = r16
-.alias m11 = r17
-.alias m12 = r18
-.alias m13 = r19
-.alias m14 = r20
-.alias m15 = r21
-;-----------------------------------------------------------------------------
 ; Storage ranges
 ; r32-r63 : Output Registers (o0-o31)
 ; r64-r127 : Input Registers (i0-i63)

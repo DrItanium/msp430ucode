@@ -1,0 +1,71 @@
+;-----------------------------------------------------------------------------
+; msp430ucode
+; Copyright (c) 2015, Joshua Scoggins
+; All rights reserved.
+;
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+;     * Redistributions of source code must retain the above copyright
+;       notice, this list of conditions and the following disclaimer.
+;     * Redistributions in binary form must reproduce the above copyright
+;       notice, this list of conditions and the following disclaimer in the
+;       documentation and/or other materials provided with the distribution.
+;
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+; ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+; WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+; DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR 
+; ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+; (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+; ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;-----------------------------------------------------------------------------
+; Now with the register conventions as described by msp430, I use the m prefix
+; to denote that these are msp430 registers
+;-----------------------------------------------------------------------------
+.alias pc = r192
+.alias m0 = r192
+.alias sp = r193
+.alias m1 = r193
+.alias status = r194
+.alias m2 = r194
+.alias cgen = r195
+.alias m3 = r195
+.alias m4 = r196
+.alias m5 = r197
+.alias m6 = r198
+.alias m7 = r199
+.alias m8 = r200
+.alias m9 = r201
+.alias m10 = r202
+.alias m11 = r203
+.alias m12 = r204
+.alias m13 = r205
+.alias m14 = r206
+.alias m15 = r207
+
+;-----------------------------------------------------------------------------
+; interal registers for decoding instructions
+;-----------------------------------------------------------------------------
+.alias currinst = r216	; full instruction
+.alias prefix = r217	; Instruction prefix (4-bits)
+.alias opcode = r218	; Corresponding opcode (if applicable)
+;-----------------------------------------------------------------------------
+; single operand arithmetic
+;-----------------------------------------------------------------------------
+.alias bw = r219		; Byte or Word?
+.alias addr-mode = r220 ; addressing mode
+;-----------------------------------------------------------------------------
+; Conditional jump; PC = PC + 2 * offset
+;-----------------------------------------------------------------------------
+.alias condition = r221
+.alias offset = r222
+;-----------------------------------------------------------------------------
+; Two operand arithmetic
+;-----------------------------------------------------------------------------
+.alias source = r223
+.alias destination = r224
+.alias ad = r225
+
