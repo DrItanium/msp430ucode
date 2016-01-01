@@ -1,0 +1,229 @@
+;-----------------------------------------------------------------------------
+; stackucode
+; Copyright (c) 2015, Joshua Scoggins
+; All rights reserved.
+;
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+;     * Redistributions of source code must retain the above copyright
+;       notice, this list of conditions and the following disclaimer.
+;     * Redistributions in binary form must reproduce the above copyright
+;       notice, this list of conditions and the following disclaimer in the
+;       documentation and/or other materials provided with the distribution.
+;
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+; ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+; WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+; DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR 
+; ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+; (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+; ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;-----------------------------------------------------------------------------
+; System description 
+; include this file first 
+;-----------------------------------------------------------------------------
+; Start with the fixed registers
+;-----------------------------------------------------------------------------
+.alias false = r0
+.alias true = r1
+.alias zero = r0
+.alias one = r1
+.alias micro-ip = r2
+.alias micro-sp = r3
+.alias micro-pred = r4
+.alias micro-cp = r5
+;-----------------------------------------------------------------------------
+; Now with the register conventions (taken from my earlier stack microcode work)
+;-----------------------------------------------------------------------------
+.alias max = r6
+.alias min = r7
+.alias two = r8
+.alias three = r9
+.alias memstart = r10
+.alias memend = r11
+.alias opvec = r12
+.alias stack-first = r13
+.alias stack-second = r14
+.alias stack-third = r15
+.alias stack-rest = r16
+.alias stack-len = r17
+.alias fp = r18
+.alias ip = r19
+.alias ifp = r20		; indirect function pointer
+;-----------------------------------------------------------------------------
+; Storage ranges
+; r32-r63 : Output Registers (o0-o31)
+; r64-r127 : Input Registers (i0-i63)
+; r128-r191 : Local Registers (l0-l63)
+;-----------------------------------------------------------------------------
+; Output Registers
+;-----------------------------------------------------------------------------
+.alias o0 = r32
+.alias o1 = r33
+.alias o2 = r34
+.alias o3 = r35
+.alias o4 = r36
+.alias o5 = r37
+.alias o6 = r38
+.alias o7 = r39
+.alias o8 = r40
+.alias o9 = r41
+.alias o10 = r42
+.alias o11 = r43
+.alias o12 = r44
+.alias o13 = r45
+.alias o14 = r46
+.alias o15 = r47
+.alias o16 = r48
+.alias o17 = r49
+.alias o18 = r50
+.alias o19 = r51
+.alias o20 = r52
+.alias o21 = r53
+.alias o22 = r54
+.alias o23 = r55
+.alias o24 = r56
+.alias o25 = r57
+.alias o26 = r58
+.alias o27 = r59
+.alias o28 = r60
+.alias o29 = r61
+.alias o30 = r62
+.alias o31 = r63
+;-----------------------------------------------------------------------------
+; Input Registers
+;-----------------------------------------------------------------------------
+.alias i0 = r64
+.alias i1 = r65
+.alias i2 = r66
+.alias i3 = r67
+.alias i4 = r68
+.alias i5 = r69
+.alias i6 = r70
+.alias i7 = r71
+.alias i8 = r72
+.alias i9 = r73
+.alias i10 = r74
+.alias i11 = r75
+.alias i12 = r76
+.alias i13 = r77
+.alias i14 = r78
+.alias i15 = r79
+.alias i16 = r80
+.alias i17 = r81
+.alias i18 = r82
+.alias i19 = r83
+.alias i20 = r84
+.alias i21 = r85
+.alias i22 = r86
+.alias i23 = r87
+.alias i24 = r88
+.alias i25 = r89
+.alias i26 = r90
+.alias i27 = r91
+.alias i28 = r92
+.alias i29 = r93
+.alias i30 = r94
+.alias i31 = r95
+.alias i32 = r96
+.alias i33 = r97
+.alias i34 = r98
+.alias i35 = r99
+.alias i36 = r100
+.alias i37 = r101
+.alias i38 = r102
+.alias i39 = r103
+.alias i40 = r104
+.alias i41 = r105
+.alias i42 = r106
+.alias i43 = r107
+.alias i44 = r108
+.alias i45 = r109
+.alias i46 = r110
+.alias i47 = r111
+.alias i48 = r112
+.alias i49 = r113
+.alias i50 = r114
+.alias i51 = r115
+.alias i52 = r116
+.alias i53 = r117
+.alias i54 = r118
+.alias i55 = r119
+.alias i56 = r120
+.alias i57 = r121
+.alias i58 = r122
+.alias i59 = r123
+.alias i60 = r124
+.alias i61 = r125
+.alias i62 = r126
+.alias i63 = r127
+;-----------------------------------------------------------------------------
+; Local Registers
+;-----------------------------------------------------------------------------
+.alias l0 = r128
+.alias l1 = r129
+.alias l2 = r130
+.alias l3 = r131
+.alias l4 = r132
+.alias l5 = r133
+.alias l6 = r134
+.alias l7 = r135
+.alias l8 = r136
+.alias l9 = r137
+.alias l10 = r138
+.alias l11 = r139
+.alias l12 = r140
+.alias l13 = r141
+.alias l14 = r142
+.alias l15 = r143
+.alias l16 = r144
+.alias l17 = r145
+.alias l18 = r146
+.alias l19 = r147
+.alias l20 = r148
+.alias l21 = r149
+.alias l22 = r150
+.alias l23 = r151
+.alias l24 = r152
+.alias l25 = r153
+.alias l26 = r154
+.alias l27 = r155
+.alias l28 = r156
+.alias l29 = r157
+.alias l30 = r158
+.alias l31 = r159
+.alias l32 = r160
+.alias l33 = r161
+.alias l34 = r162
+.alias l35 = r163
+.alias l36 = r164
+.alias l37 = r165
+.alias l38 = r166
+.alias l39 = r167
+.alias l40 = r168
+.alias l41 = r169
+.alias l42 = r170
+.alias l43 = r171
+.alias l44 = r172
+.alias l45 = r173
+.alias l46 = r174
+.alias l47 = r175
+.alias l48 = r176
+.alias l49 = r177
+.alias l50 = r178
+.alias l51 = r179
+.alias l52 = r180
+.alias l53 = r181
+.alias l54 = r182
+.alias l55 = r183
+.alias l56 = r184
+.alias l57 = r185
+.alias l58 = r186
+.alias l59 = r187
+.alias l60 = r188
+.alias l61 = r189
+.alias l62 = r190
+.alias l63 = r191
