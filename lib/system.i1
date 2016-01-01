@@ -36,6 +36,12 @@
 .alias micro-pred = r4
 .alias micro-cp = r5
 ;-----------------------------------------------------------------------------
+; Library related aliases
+;-----------------------------------------------------------------------------
+.alias ifp = r6 	; indirect function pointer
+.alias two = r7		; constant 2
+.alias three = r8 	; consant 3
+;-----------------------------------------------------------------------------
 ; Storage ranges
 ; r32-r63 : Output Registers (o0-o31)
 ; r64-r127 : Input Registers (i0-i63)

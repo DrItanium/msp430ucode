@@ -22,22 +22,12 @@
 ; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;-----------------------------------------------------------------------------
-; ucode.i1 - entry point for microcode
-;
-; Use the C preprocessor to handle file inclusion for everything else
+; init.i1 - bare initialization code for an iris1 chip
 ;-----------------------------------------------------------------------------
-; YOU MUST ALWAYS MAINTAIN THE ORDER OF THESE TWO FILES!
+; setup the corresponding extended constant registers
 ;-----------------------------------------------------------------------------
-#include "lib/system.i1"
-#include "lib/init.i1"
-;-----------------------------------------------------------------------------
-; common ucode libraries
-;-----------------------------------------------------------------------------
-#include "lib/funcall.i1"
-#include "lib/segments.i1"
-#include "lib/string.i1"
-;-----------------------------------------------------------------------------
-#include "src/msp430aliases.i1"
-#include "src/main.i1"
-#include "src/decode.i1"
-;-----------------------------------------------------------------------------
+.code
+.org #x0000
+set ?two = #2								; Set ?two to 2
+set ?three = #3								; Set ?three to 3
+branch ucode_start							; jump to the true entry point
