@@ -77,6 +77,21 @@
 ; Two operand arithmetic
 ;-----------------------------------------------------------------------------
 .alias source = r223
+.alias register = r223    ; used in single-operand arithmetic
 .alias destination = r224
 .alias ad = r225
-
+;-----------------------------------------------------------------------------
+; hardcoded instruction masks
+;-----------------------------------------------------------------------------
+.alias prefix-mask = r255
+.alias opcode-mask-single-operand-arithmetic = r254
+.alias bw-mask = r253
+.alias as-mask = r252
+.alias condition-mask = r251
+.alias opcode-mask-two-operand-arithmetic = r250
+.alias ad-mask = r249
+.alias source-register-mask = r248
+.alias destination-register-mask = r247
+.alias signed-offset-mask = r246
+.alias register-single-operand-arithmetic-mask = r245
+.alias single-operand-arithmetic-check-mask = r244

@@ -30,4 +30,8 @@
 .org #x0000
 set ?two = #2								; Set ?two to 2
 set ?three = #3								; Set ?three to 3
+set ?four = #4
+set ?five = #5
+set ?six = #6
+set ?seven = #7
 branch ucode_start							; jump to the true entry point

@@ -41,6 +41,10 @@
 .alias ifp = r6 	; indirect function pointer
 .alias two = r7		; constant 2
 .alias three = r8 	; consant 3
+.alias four = r9 	; constant 4
+.alias five = r10	; constant 5
+.alias six = r11	; constant 6
+.alias seven = r12  ; constant 7
 ;-----------------------------------------------------------------------------
 ; Storage ranges
 ; r32-r63 : Output Registers (o0-o31)

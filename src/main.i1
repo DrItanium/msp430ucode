@@ -26,11 +26,26 @@
 ;-----------------------------------------------------------------------------
 .code
 ucode_start:
-	move ?pc = ?zero								; setup the program counter
-	move ?sp = ?zero 								; stack start
-	move ?status = ?zero							; status register
-	move ?cgen = ?zero								; constant generator
+	move ?pc = ?zero												; setup the program counter
+	move ?sp = ?zero 												; stack start
+	move ?status = ?zero											; status register
+	move ?cgen = ?zero												; constant generator
+	set ?prefix-mask                                = #b1110000000000000
+	set ?single-operand-arithmetic-check-mask       = #b0001110000000000
+	set ?opcode-mask-single-operand-arithmetic      = #b0000001110000000
+	set ?bw-mask                                    = #b0000000001000000
+	set ?as-mask                                    = #b0000000000110000
+	set ?register-single-operand-arithmetic-mask    = #b0000000000001111
+	set ?condition-mask                             = #b0001110000000000
+	set ?signed-offset-mask                         = #b0000001111111111
+	set ?opcode-mask-two-operand-arithmetic         = #b1111000000000000
+	set ?source-register-mask                       = #b0000111100000000
+	set ?ad-mask                                    = #b0000000010000000
+	set ?destination-register-mask                  = #b0000000000001111
 ucode_done:											; jump to here when we are done or 
 	system #0, ?one, ?one							; standard terminate simulator call
 ucode_panic:										; something bad happened so
 	system #1, ?one, ?one							; panic system call
+
+
+

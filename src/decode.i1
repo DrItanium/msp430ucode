@@ -26,17 +26,56 @@
 ;-----------------------------------------------------------------------------
 .code
 load_instruction_from_memory:
-	load ?currinst = ?pc, data	; load the current instruction into the currinst register
-decode_instruction:
-	
+	load ?currinst = ?pc, data				; load the current instruction into the currinst register
+	and ?prefix = ?currinst, ?prefix-mask
+	shiftright ?prefix = ?prefix, #13
+	eq ?micro-pred = ?prefix, ?zero
+	branch single_operand_arithmetic if ?micro-pred
+	eq ?micro-pred = ?prefix, ?one
+	branch conditional_jump if ?micro-pred
+	branch two_operand_arithmetic
+single_operand_arithmetic:
+	and ?prefix = ?currinst, ?single-operand-arithmetic-check-mask        ; check and make sure that the value is one in this mask (reuse prefix)
+	shiftright ?prefix = ?prefix, #10			                          ; shift right it by 10 bits
+	ne ?micro-pred = ?prefix, ?one                                        ; make sure that this prefix is one
+	branch illegal_operation if ?micro-pred						          ; If it isn't then get out of there and terminate!
+	and ?opcode = ?currinst, ?opcode-mask-single-operand-arithmetic       ; extract the opcode bits out
+	shiftright ?opcode = ?opcode, #7								      ; 
+	and ?bw = ?currinst, ?bw-mask                                         ; extract the BW bit
+	shiftright ?bw = ?bw, #6                                              ; shift 6 bits to the right
+	and ?addr-mode = ?currinst, ?as-mask                                  ; extract the as bits
+	shiftright ?addr-mode = ?addr-mode, #4                                ; 
+	and ?register = ?currinst, ?register-single-operand-arithmetic-mask   ; extract the target register
+												   						  ; Determine the kind of instruction from the opcode
+	eq ?micro-pred = ?opcode, ?zero                                       ; Opcode is Rotate Right (1 bit) through carry (RRC)?
+	branch rotate_right_carry if ?micro-pred                              ; if it is zero then branch to rotate right and carry
+	eq ?micro-pred = ?opcode, ?one                                        ; Opcode is Swap bytes (SWPB)?
+	branch swap_bytes if ?micro-pred                                      ; if it is one then branch to swap bytes
+	eq ?micro-pred = ?opcode, ?two                                        ; Opcode is Rotate right (1 bit) arithmetic?
+	branch rotate_right_arithmetic if ?micro-pred                         ; if it is two then branch to rotate_right_arithmetic
+	eq ?micro-pred = ?opcode, ?three                                      ; Opcode is sign extend byte to word (SXT)?
+	branch sign_extend_byte_to_word if ?micro-pred                        ; if it is three then branch to sign extend byte to word
+	eq ?micro-pred = ?opcode, ?four                                       ; Opcode is push (PUSH)?
+	branch push_onto_stack if ?micro-pred                                 ; if it is four then branch to push value onto stack
+	eq ?micro-pred = ?opcode, ?five                                       ; Opcode is call (CALL) or subroutine call
+	branch call_subroutine if ?micro-pred                                 ; if it is five then branch to subroutine call
+	eq ?micro-pred = ?opcode, ?six                                        ; Opcode is RETI (return from interrupt)
+	branch return_from_interrupt if ?micro-pred                           ; if it is six then return from interrupt
+	branch illegal_operation                                              ; otherwise ERROR out
+conditional_jump:
+	and ?opcode = ?currinst, ?condition-mask                              ; extract the condition/opcode
 
 
+two_operand_arithmetic:
 
-.microcode
-; 4 most significant bits are used to determine type
-single_operand_arithmetic_sig:
-	.word #b0001
-conditional_jump_sig:
-	.word #b0010
-two_operand_arithmetic_sig_base:
-	.word #b0100
+rotate_right_carry:
+swap_bytes:
+rotate_right_arithmetic:
+sign_extend_byte_to_word:
+push_onto_stack:
+call_subroutine:
+return_from_interrupt:
+
+illegal_operation:
+	; TODO: add code to print out error message
+	branch ucode_panic
