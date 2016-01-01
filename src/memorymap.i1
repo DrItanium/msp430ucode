@@ -22,23 +22,46 @@
 ; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;-----------------------------------------------------------------------------
-; ucode.i1 - entry point for microcode
-;
-; Use the C preprocessor to handle file inclusion for everything else
+; Memory layout for a generic msp430
 ;-----------------------------------------------------------------------------
-; YOU MUST ALWAYS MAINTAIN THE ORDER OF THESE TWO FILES!
-;-----------------------------------------------------------------------------
-#include "lib/system.i1"
-#include "lib/init.i1"
-;-----------------------------------------------------------------------------
-; common ucode libraries
-;-----------------------------------------------------------------------------
-#include "lib/funcall.i1"
-#include "lib/segments.i1"
-#include "lib/string.i1"
-;-----------------------------------------------------------------------------
-#include "src/msp430aliases.i1"
-#include "src/main.i1"
-#include "src/decode.i1"
-#include "src/memorymap.i1"
-;-----------------------------------------------------------------------------
+.data
+.org #x0000
+; processor special function registers
+psf0:
+	.word #0
+psf1:
+	.word #0
+psf2:
+	.word #0
+psf3:
+	.word #0
+psf4:
+	.word #0
+psf5:
+	.word #0
+psf6:
+	.word #0
+psf7:
+	.word #0
+.org #x0008
+eightBitPeripherals:
+.org #x0100
+sixteenBitPeripherals:
+.org #x0200
+ramBegin:
+.org #x09FF
+ramEnd:
+.org #x0C00
+bootStrapFlashBegin:
+.org #x0FFF
+bootStrapFlashEnd:
+.org #x1000
+romFlashBegin:
+.org #x10FF
+romFlashEnd:
+.org #x1100
+programBegin:
+.org #xFFDF
+interuptVectorBase:
+.org #xFFFF
+programEnd:
