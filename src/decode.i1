@@ -47,26 +47,21 @@ single_operand_arithmetic:
 	shiftright ?addr-mode = ?addr-mode, #4                                ; 
 	and ?register = ?currinst, ?register-single-operand-arithmetic-mask   ; extract the target register
 												   						  ; Determine the kind of instruction from the opcode
-	eq ?micro-pred = ?opcode, ?zero                                       ; Opcode is Rotate Right (1 bit) through carry (RRC)?
-	branch rotate_right_carry if ?micro-pred                              ; if it is zero then branch to rotate right and carry
-	eq ?micro-pred = ?opcode, ?one                                        ; Opcode is Swap bytes (SWPB)?
-	branch swap_bytes if ?micro-pred                                      ; if it is one then branch to swap bytes
-	eq ?micro-pred = ?opcode, ?two                                        ; Opcode is Rotate right (1 bit) arithmetic?
-	branch rotate_right_arithmetic if ?micro-pred                         ; if it is two then branch to rotate_right_arithmetic
-	eq ?micro-pred = ?opcode, ?three                                      ; Opcode is sign extend byte to word (SXT)?
-	branch sign_extend_byte_to_word if ?micro-pred                        ; if it is three then branch to sign extend byte to word
-	eq ?micro-pred = ?opcode, ?four                                       ; Opcode is push (PUSH)?
-	branch push_onto_stack if ?micro-pred                                 ; if it is four then branch to push value onto stack
-	eq ?micro-pred = ?opcode, ?five                                       ; Opcode is call (CALL) or subroutine call
-	branch call_subroutine if ?micro-pred                                 ; if it is five then branch to subroutine call
-	eq ?micro-pred = ?opcode, ?six                                        ; Opcode is RETI (return from interrupt)
-	branch return_from_interrupt if ?micro-pred                           ; if it is six then return from interrupt
-	branch illegal_operation                                              ; otherwise ERROR out
+	set ?l0 = single_operand_arithmetic_table                             ; Compute table offset
+	add ?l1 = ?l0, ?opcode                                                ;
+	load ?l2 = ?l1, microcode                                             ; load the address
+	branch ?l2															  ;
 conditional_jump:
 	and ?opcode = ?currinst, ?condition-mask                              ; extract the condition/opcode
-
-
+	shiftright ?opcode = ?opcode, #10                                     ;
+	and ?condition = ?currinst, ?signed-offset-mask                       ; extract the signed offset (immediate)
+																		  ; 
+	set ?l0 = conditional_jump_table                                      ; Compute table offset
+	add ?l1 = ?l0, ?condition                                             ;
+	load ?l2 = ?l1                                                        ; load address
+	branch ?l2                                                            ; jump to target address
 two_operand_arithmetic:
+	
 
 rotate_right_carry:
 swap_bytes:
@@ -75,7 +70,68 @@ sign_extend_byte_to_word:
 push_onto_stack:
 call_subroutine:
 return_from_interrupt:
-
+jump_not_equal_zero:
+jump_equal_zero:
+jump_no_carry:
+jump_if_carry:
+jump_if_negative:
+jump_greater_or_equal:
+jump_less_than:
+jump_unconditional:
+move_op:
+add_op:
+addc_op:
+subc_op:
+sub_op:
+compare_op:
+dadd_op:
+bit_op:
+bit_clear_op:
+bit_set_op:
+xor_op:
+and_op:
 illegal_operation:
 	; TODO: add code to print out error message
 	branch ucode_panic
+
+.microcode
+; A jump table
+single_operand_arithmetic_table:
+	.word rotate_right_carry:
+	.word swap_bytes:
+	.word rotate_right_arithmetic:
+	.word sign_extend_byte_to_word:
+	.word push_onto_stack:
+	.word call_subroutine:
+	.word return_from_interrupt:
+	.word illegal_operation:
+
+conditional_jump_table:
+	.word jump_not_equal_zero:
+	.word jump_equal_zero:
+	.word jump_no_carry:
+	.word jump_if_carry:
+	.word jump_if_negative:
+	.word jump_greater_or_equal:
+	.word jump_less_than:
+	.word jump_unconditional:
+
+two_operand_arithmetic_jump_table:
+	; first four cells will never be called due to how the encoding is setup
+	.word illegal_operation:
+	.word illegal_operation:
+	.word illegal_operation:
+	.word illegal_operation:
+	.word move_op:
+	.word add_op:
+	.word addc_op:
+	.word subc_op:
+	.word sub_op:
+	.word compare_op:
+	.word dadd_op:
+	.word bit_op:
+	.word bit_clear_op:
+	.word bit_set_op:
+	.word xor_op:
+	.word and_op:
+
