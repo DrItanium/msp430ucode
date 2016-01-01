@@ -25,6 +25,93 @@
 ; Decoder logic
 ;-----------------------------------------------------------------------------
 .code
+;-----------------------------------------------------------------------------
+; loadRegisterContents
+; ?i0 - register index
+; ?o0 - contents of said register
+; 
+; Providing an illegal index will result in ucode_panic being called
+;-----------------------------------------------------------------------------
+loadRegisterContents:
+	push ?micro-pred
+	move ?l0 = ?i0
+	set ?l1 = #16
+	set ?l2 = msp430RegisterTable
+	ge ?micro-pred = ?l0, ?l1
+	branch ucode_panic if ?micro-pred
+	add ?l3 = ?l2, ?l0
+	load ?l4 = ?l3
+	branch ?l4
+loadRegisterContents_register0:
+	move ?o0 = ?m0
+	branch loadRegisterContents_Done
+loadRegisterContents_register1:
+	move ?o0 = ?m1
+	branch loadRegisterContents_Done
+loadRegisterContents_register2:
+	move ?o0 = ?m2
+	branch loadRegisterContents_Done
+loadRegisterContents_register3:
+	move ?o0 = ?m3
+	branch loadRegisterContents_Done
+loadRegisterContents_register4:
+	move ?o0 = ?m4
+	branch loadRegisterContents_Done
+loadRegisterContents_register5:
+	move ?o0 = ?m5
+	branch loadRegisterContents_Done
+loadRegisterContents_register6:
+	move ?o0 = ?m6
+	branch loadRegisterContents_Done
+loadRegisterContents_register7:
+	move ?o0 = ?m7
+	branch loadRegisterContents_Done
+loadRegisterContents_register8:
+	move ?o0 = ?m8
+	branch loadRegisterContents_Done
+loadRegisterContents_register9:
+	move ?o0 = ?m9
+	branch loadRegisterContents_Done
+loadRegisterContents_register10:
+	move ?o0 = ?m10
+	branch loadRegisterContents_Done
+loadRegisterContents_register11:
+	move ?o0 = ?m11
+	branch loadRegisterContents_Done
+loadRegisterContents_register12:
+	move ?o0 = ?m12
+	branch loadRegisterContents_Done
+loadRegisterContents_register13:
+	move ?o0 = ?m13
+	branch loadRegisterContents_Done
+loadRegisterContents_register14:
+	move ?o0 = ?m14
+	branch loadRegisterContents_Done
+loadRegisterContents_register15:
+	move ?o0 = ?m15
+loadRegisterContents_Done:
+	pop ?micro-pred
+	return
+.microcode
+; setup a load table
+msp430RegisterTable:
+	.word loadRegisterContents_register0:
+	.word loadRegisterContents_register1:
+	.word loadRegisterContents_register2:
+	.word loadRegisterContents_register3:
+	.word loadRegisterContents_register4:
+	.word loadRegisterContents_register5:
+	.word loadRegisterContents_register6:
+	.word loadRegisterContents_register7:
+	.word loadRegisterContents_register8:
+	.word loadRegisterContents_register9:
+	.word loadRegisterContents_register10:
+	.word loadRegisterContents_register11:
+	.word loadRegisterContents_register12:
+	.word loadRegisterContents_register13:
+	.word loadRegisterContents_register14:
+	.word loadRegisterContents_register15:
+.code
 load_instruction_from_memory:
 	load ?currinst = ?pc, data				; load the current instruction into the currinst register
 	and ?prefix = ?currinst, ?prefix-mask
@@ -58,7 +145,7 @@ conditional_jump:
 																		  ; 
 	set ?l0 = conditional_jump_table                                      ; Compute table offset
 	add ?l1 = ?l0, ?condition                                             ;
-	load ?l2 = ?l1                                                        ; load address
+	load ?l2 = ?l1, microcode                                             ; load address
 	branch ?l2                                                            ; jump to target address
 two_operand_arithmetic:
 	
