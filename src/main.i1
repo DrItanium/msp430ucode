@@ -42,6 +42,11 @@ ucode_start:
 	set ?source-register-mask                       = #b0000111100000000
 	set ?ad-mask                                    = #b0000000010000000
 	set ?destination-register-mask                  = #b0000000000001111
+
+
+
+
+	branch load_instruction_from_memory
 ucode_done:											; jump to here when we are done or 
 	system #0, ?one, ?one							; standard terminate simulator call
 ucode_panic:										; something bad happened so

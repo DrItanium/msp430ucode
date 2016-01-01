@@ -62,7 +62,9 @@ conditional_jump:
 	branch ?l2                                                            ; jump to target address
 two_operand_arithmetic:
 	
-
+;-----------------------------------------------------------------------------
+; Single argument operand instructions
+;-----------------------------------------------------------------------------
 rotate_right_carry:
 swap_bytes:
 rotate_right_arithmetic:
@@ -70,6 +72,9 @@ sign_extend_byte_to_word:
 push_onto_stack:
 call_subroutine:
 return_from_interrupt:
+;-----------------------------------------------------------------------------
+; Conditional jump instructions
+;-----------------------------------------------------------------------------
 jump_not_equal_zero:
 jump_equal_zero:
 jump_no_carry:
@@ -78,6 +83,9 @@ jump_if_negative:
 jump_greater_or_equal:
 jump_less_than:
 jump_unconditional:
+;-----------------------------------------------------------------------------
+; Conditional jump instructions
+;-----------------------------------------------------------------------------
 move_op:
 add_op:
 addc_op:
@@ -134,4 +142,3 @@ two_operand_arithmetic_jump_table:
 	.word bit_set_op:
 	.word xor_op:
 	.word and_op:
-
