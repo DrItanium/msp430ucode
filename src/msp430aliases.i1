@@ -45,6 +45,17 @@
 .alias m13 = r205
 .alias m14 = r206
 .alias m15 = r207
+; Processor special function registers (interrupt control registers)
+; in the description of the memory map these are byte address locations but we'll do some magic internally to use registers instead
+; at some point we could introduce optimizations to keep that data local in registers
+; .alias psfr0 = r208
+; .alias psfr1 = r209
+; .alias psfr2 = r210
+; .alias psfr3 = r211
+; .alias psfr4 = r212
+; .alias psfr5 = r213
+; .alias psfr6 = r214
+; .alias psfr7 = r215
 
 ;-----------------------------------------------------------------------------
 ; interal registers for decoding instructions
