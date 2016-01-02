@@ -85,3 +85,35 @@ extractSG1Flag:
 	return
 
 
+;-----------------------------------------------------------------------------
+; extractOscillatorFlag: extract the Oscillator flag bit
+; takes in no input
+; ?o0 - the Oscillator flag value
+;-----------------------------------------------------------------------------
+extractOscillatorFlag:
+	shiftright ?o0 = ?status, #5         ; shift left by five
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
+
+;-----------------------------------------------------------------------------
+; extractCpuOffFlag: extract the CpuOff flag bit
+; takes in no input
+; ?o0 - the CpuOff flag value
+;-----------------------------------------------------------------------------
+extractCpuOffFlag:
+	shiftright ?o0 = ?status, #4         ; shift left by four
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
+;-----------------------------------------------------------------------------
+; extractGlobalInterruptEnableFlag: extract the GlobalInterruptEnable flag bit
+; takes in no input
+; ?o0 - the GlobalInterruptEnable flag value
+;-----------------------------------------------------------------------------
+extractGlobalInterruptEnableFlag:
+	shiftright ?o0 = ?status, #3         ; shift left by three
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
+; bits 9-15 are marked as reserved!
