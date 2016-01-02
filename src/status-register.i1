@@ -22,24 +22,66 @@
 ; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;-----------------------------------------------------------------------------
-; ucode.i1 - entry point for microcode
-;
-; Use the C preprocessor to handle file inclusion for everything else
+; Status register related functions
 ;-----------------------------------------------------------------------------
-; YOU MUST ALWAYS MAINTAIN THE ORDER OF THESE TWO FILES!
+.code
 ;-----------------------------------------------------------------------------
-#include "lib/system.i1"
-#include "lib/init.i1"
+; extractCarryFlag: extract the carry flag bit
+; takes in no input
+; ?o0 - the carry flag value
 ;-----------------------------------------------------------------------------
-; common ucode libraries
+extractCarryFlag:
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
 ;-----------------------------------------------------------------------------
-#include "lib/funcall.i1"
-#include "lib/segments.i1"
-#include "lib/string.i1"
+; extractZeroFlag: extract the zero flag bit
+; takes in no input
+; ?o0 - the zero flag value
 ;-----------------------------------------------------------------------------
-#include "src/msp430aliases.i1"
-#include "src/main.i1"
-#include "src/decode.i1"
-#include "src/status-register.i1"
-#include "src/memorymap.i1"
+extractZeroFlag:
+	shiftright ?o0 = ?status, #1         ; shift left by one
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
 ;-----------------------------------------------------------------------------
+; extractNegativeFlag: extract the negative flag bit
+; takes in no input
+; ?o0 - the negative flag value
+;-----------------------------------------------------------------------------
+extractNegativeFlag:
+	shiftright ?o0 = ?status, #2         ; shift left by two
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
+;-----------------------------------------------------------------------------
+; extractOverflowFlag: extract the overflow flag bit
+; takes in no input
+; ?o0 - the overflow flag value
+;-----------------------------------------------------------------------------
+extractOverflowFlag:
+	shiftright ?o0 = ?status, #8         ; shift left by eight
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
+;-----------------------------------------------------------------------------
+; extractSG0Flag: extract the SG0 flag bit
+; takes in no input
+; ?o0 - the SG0 flag value
+;-----------------------------------------------------------------------------
+extractSG0Flag:
+	shiftright ?o0 = ?status, #6         ; shift left by six
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
+;-----------------------------------------------------------------------------
+; extractSG1Flag: extract the SG1 flag bit
+; takes in no input
+; ?o0 - the SG1 flag value
+;-----------------------------------------------------------------------------
+extractSG1Flag:
+	shiftright ?o0 = ?status, #7         ; shift left by seven
+	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
+	return
+
+

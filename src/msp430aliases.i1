@@ -95,3 +95,4 @@
 .alias signed-offset-mask = r246
 .alias register-single-operand-arithmetic-mask = r245
 .alias single-operand-arithmetic-check-mask = r244
+.alias single-bit-mask = r243

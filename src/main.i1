@@ -42,6 +42,7 @@ ucode_start:
 	set ?source-register-mask                       = #b0000111100000000
 	set ?ad-mask                                    = #b0000000010000000
 	set ?destination-register-mask                  = #b0000000000001111
+	set ?single-bit-mask                            = #b0000000000000001
 
 
 
