@@ -45,7 +45,7 @@
 .alias five = r10	; constant 5
 .alias six = r11	; constant 6
 .alias seven = r12  ; constant 7
-.alias fifteen = r15 ; constant 15
+.alias fifteen = r13 ; constant 15
 ;-----------------------------------------------------------------------------
 ; Storage ranges
 ; r32-r63 : Output Registers (o0-o31)
