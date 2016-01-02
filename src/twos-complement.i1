@@ -22,25 +22,9 @@
 ; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;-----------------------------------------------------------------------------
-; ucode.i1 - entry point for microcode
-;
-; Use the C preprocessor to handle file inclusion for everything else
+.code
 ;-----------------------------------------------------------------------------
-; YOU MUST ALWAYS MAINTAIN THE ORDER OF THESE TWO FILES!
+; twos-complement.i1 - emulate support for two's complement
 ;-----------------------------------------------------------------------------
-#include "lib/system.i1"
-#include "lib/init.i1"
-;-----------------------------------------------------------------------------
-; common ucode libraries
-;-----------------------------------------------------------------------------
-#include "lib/funcall.i1"
-#include "lib/segments.i1"
-#include "lib/string.i1"
-;-----------------------------------------------------------------------------
-#include "src/msp430aliases.i1"
-#include "src/main.i1"
-#include "src/decode.i1"
-#include "src/status-register.i1"
-#include "src/twos-complement.i1"
-#include "src/memorymap.i1"
-;-----------------------------------------------------------------------------
+
+
