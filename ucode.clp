@@ -30,7 +30,7 @@
            ?*microcodeSegment* = "microcode"
            ?*callSegment* = "procedure"
            ?*stackSegment* = "stack"
-           ?*currentSegment* = [code]
+           ?*currSegment* = [segment:code]
            )
 (deftemplate stage
              (slot current
@@ -58,25 +58,22 @@
         (visibility public)
         (default-dynamic 0))
   (multislot entries
-            (visibility public)
+             (visibility public)
              (type INSTANCE))
   (message-handler register primary))
 (defmessage-handler segment register primary
- (?thing)
- (bind ?self:address
-       (+ ?self:address 1))
- (bind ?self:entries
-       ?self:entries
-       ?thing))
+                    (?thing)
+                    (bind ?self:address
+                          (+ ?self:address 1))
+                    (bind ?self:entries
+                          ?self:entries
+                          ?thing))
 (definstances segments
-              (code of segment)
-              (data of segment)
-              (microcode of segment)
-              (procedure of segment)
-              (stack of segment))
-(defclass indirection
- (is-a USER)
- (message-handler resolve primary))
+              (segment:code of segment)
+              (segment:data of segment)
+              (segment:microcode of segment)
+              (segment:procedure of segment)
+              (segment:stack of segment))
 (defclass entry
   (is-a USER)
   (slot address
@@ -93,9 +90,9 @@
         (default ?NONE))
   (message-handler representation primary))
 (defclass label
- (is-a entry)
- (message-handler word-representation primary)
- (message-handler representation primary))
+  (is-a entry)
+  (message-handler word-representation primary)
+  (message-handler representation primary))
 (defmessage-handler label word-representation primary
                     ()
                     (send ?self:address word-representation))
@@ -105,10 +102,10 @@
 (defmessage-handler SYMBOL word-representation primary
                     () 
                     (if (eq 1 (str-index "#" ?self)) then
-                        ?self
-                        else
-                        (send (symbol-to-instance-name ?self) 
-                              word-representation)))
+                      ?self
+                      else
+                      (send (symbol-to-instance-name ?self) 
+                            word-representation)))
 (defclass word
   (is-a entry)
   (slot value
@@ -128,13 +125,13 @@
                             (send ?self:value word-representation)))
 (deffunction .word
              (?value)
-             (if (neq ?*currentSegment* 
+             (if (neq ?*currSegment* 
                       [code]) then
-               (send ?*currentSegment* 
+               (send ?*currSegment* 
                      register
                      (make-instance of word
-                                    (segment ?*currentSegment*)
-                                    (address (send ?*currentSegment* get-address))
+                                    (segment ?*currSegment*)
+                                    (address (send ?*currSegment* get-address))
                                     (value ?value)))
                else
                (printout werror "Can't put words into the code segment!" crlf)
@@ -144,16 +141,16 @@
              (sym-cat #x (format nil "%x" ?number)))
 (deffunction label
              (?name)
-             (send ?*currentSegment*
+             (send ?*currSegment*
                    register
                    (if (not (instance-existp (symbol-to-instance-name ?name))) then
-                       (make-instance ?name of label
-                                      (segment ?*currentSegment*)
-                                      (address (send ?*currentSegment* get-address)))
-                       else
-                       (printout werror "Already defined a label named " ?name crlf)
-                       (exit 1))))
-                                 
+                     (make-instance ?name of label
+                                    (segment ?*currSegment*)
+                                    (address (send ?*currSegment* get-address)))
+                     else
+                     (printout werror "Already defined a label named " ?name crlf)
+                     (exit 1))))
+
 (deffunction .string 
              (?str)
              (bind ?tmpFile 
@@ -176,6 +173,7 @@
                else
                (printout werror "Couldn't open " ?path " for writing! It is needed to translate strings!" crlf)
                (exit 1)))
+
 (defclass register
   (is-a USER)
   (slot index
@@ -200,15 +198,12 @@
                          (make-instance (sym-cat ?prefix ?i) of register 
                                         (index ?i))))
 
-(deffunction instruction 
-             ($?elements)
-             (printout t tab (implode$ ?elements) crlf))
 (defmessage-handler SYMBOL resolve primary
                     ()
                     (if (eq (str-index "#" ?self) 1) then
-                        ?self
-                        else
-                        (send (symbol-to-instance-name ?self) resolve)))
+                      ?self
+                      else
+                      (send (symbol-to-instance-name ?self) resolve)))
 (defmessage-handler INTEGER resolve primary
                     ()
                     (sym-cat # ?self))
@@ -314,36 +309,140 @@
                          (make-instance (sym-cat ?p (- ?i ?f)) of alias
                                         (target (symbol-to-instance-name (sym-cat r ?i))))))
 
-(defgeneric three-operand-form
-            "add operation")
-(defmethod three-operand-form
-  ((?op SYMBOL)
-   (?destination alias
-                 register
-                 SYMBOL)
-   (?source0 alias
-             register
-             SYMBOL)
-   (?source1 alias
-             register
-             SYMBOL
-             INTEGER))
-  (instruction ?op
-               (send ?destination resolve)
-               =
-               (send ?source0 resolve)
-               ,
-               (send ?source1 resolve)))
-(defmethod two-operand-form
-  ((?op SYMBOL)
-   (?destination alias
-                 register
-                 SYMBOL)
-   (?source0 alias
-             register
-             SYMBOL))
-  (instruction ?op
-               (send ?destination resolve)
-               =
-               (send ?source0 resolve)))
-                
+(defclass special-word
+  (is-a USER))
+(definstances special-words
+              (data of special-word)
+              (stack of special-word)
+              (procedure of special-word)
+              (code of special-word)
+              (microcode of special-word))
+
+(defclass instruction
+  (is-a entry)
+  (slot operation
+        (type SYMBOL)
+        (storage local)
+        (visibility public)
+        (default ?NONE))
+  (multislot rest
+             (type SYMBOL
+                   INSTANCE
+                   INTEGER)
+             (allowed-classes register
+                              alias
+                              label)
+             (visibility public)
+             (storage local)))
+
+(defgeneric instruction)
+(defmethod instruction
+  ((?operation SYMBOL)
+   (?rest MULTIFIELD))
+  (if (neq ?*currSegment* 
+           [segment:code]) then
+    (printout werror "Attempted to write instructions into a non code segment!" crlf)
+    (exit 1)
+    else
+    (send ?*currSegment*
+          register
+          (make-instance of instruction
+                         (operation ?operation)
+                         (address (send ?*currSegment* get-address))
+                         (rest ?rest)
+                         (segment ?*currSegment*)))))
+(defmethod instruction
+  ((?operation SYMBOL)
+   $?rest)
+  (instruction ?operation
+               ?rest))
+(defgeneric branch)
+(defmethod branch
+  ((?target register
+            alias
+            label
+            INTEGER
+            SYMBOL))
+  (instruction branch 
+               ?target))
+(defmethod branch
+  ((?target register
+            alias
+            label
+            INTEGER
+            SYMBOL)
+   (?if SYMBOL (eq ?current-argument if))
+   (?reg register
+         alias))
+  (instruction branch
+               ?target
+               if
+               ?reg))
+(defmethod call
+  ((?target register
+            alias
+            label
+            INTEGER
+            SYMBOL))
+  (instruction call 
+               ?target))
+(defmethod call
+  ((?target register
+            alias
+            label
+            INTEGER
+            SYMBOL)
+   (?if SYMBOL 
+        (eq ?current-argument 
+            if))
+   (?reg register
+         alias))
+  (instruction call
+               ?target
+               if
+               ?reg))
+(defmethod set
+  ((?target register
+            alias)
+   (?eq SYMBOL
+        (eq ?current-argument
+            =))
+   (?source label
+            INTEGER
+            SYMBOL))
+  (instruction set
+               ?target
+               ?eq
+               ?source))
+(defmethod move
+  ((?target register
+            alias)
+   (?eq SYMBOL
+        (eq ?current-argument
+            =))
+   (?source register
+            alias))
+  (instruction move
+               ?target
+               ?eq
+               ?source))
+(defmethod .code
+  ()
+  (bind ?*currSegment*
+        [segment:code]))
+(defmethod .stack
+  ()
+  (bind ?*currSegment*
+        [segment:stack]))
+(defmethod .procedure
+  ()
+  (bind ?*currSegment*
+        [segment:procedure]))
+(defmethod .data
+  ()
+  (bind ?*currSegment*
+        [segment:data]))
+(defmethod .microcode
+  ()
+  (bind ?*currSegment*
+        [segment:microcode]))
