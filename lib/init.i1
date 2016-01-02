@@ -34,4 +34,5 @@ set ?four = #4
 set ?five = #5
 set ?six = #6
 set ?seven = #7
+set ?fifteen = #15
 branch ucode_start							; jump to the true entry point
