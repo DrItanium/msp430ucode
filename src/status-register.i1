@@ -25,6 +25,20 @@
 ; Status register related functions
 ;-----------------------------------------------------------------------------
 .code
+
+;-----------------------------------------------------------------------------
+; extractFlagBit: extract a given flag bit
+; ?i0 - the shift amount
+; ?o0 - the carry flag value
+; 
+; NOTE: should not be called by functions outside this file, this is a fragment
+;       of a function that the other extract functions jump to after setting up
+;       arguments.
+;-----------------------------------------------------------------------------
+extractFlagBit:
+	shiftright ?o0 = ?status, ?i0        ; shift right
+	and ?o0 = ?o0, ?single-bit-mask      ; and mask it
+	return                               ; return to original caller
 ;-----------------------------------------------------------------------------
 ; extractCarryFlag: extract the carry flag bit
 ; takes in no input
@@ -40,9 +54,8 @@ extractCarryFlag:
 ; ?o0 - the zero flag value
 ;-----------------------------------------------------------------------------
 extractZeroFlag:
-	shiftright ?o0 = ?status, #1         ; shift left by one
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
+	move ?i0 = ?one
+	branch extractFlagBit
 
 ;-----------------------------------------------------------------------------
 ; extractNegativeFlag: extract the negative flag bit
@@ -50,9 +63,8 @@ extractZeroFlag:
 ; ?o0 - the negative flag value
 ;-----------------------------------------------------------------------------
 extractNegativeFlag:
-	shiftright ?o0 = ?status, #2         ; shift left by two
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
+	move ?i0 = ?two
+	branch extractFlagBit
 
 ;-----------------------------------------------------------------------------
 ; extractOverflowFlag: extract the overflow flag bit
@@ -60,9 +72,8 @@ extractNegativeFlag:
 ; ?o0 - the overflow flag value
 ;-----------------------------------------------------------------------------
 extractOverflowFlag:
-	shiftright ?o0 = ?status, #8         ; shift left by eight
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
+	set ?i0 = #8
+	branch extractFlagBit
 
 ;-----------------------------------------------------------------------------
 ; extractSG0Flag: extract the SG0 flag bit
@@ -70,9 +81,8 @@ extractOverflowFlag:
 ; ?o0 - the SG0 flag value
 ;-----------------------------------------------------------------------------
 extractSG0Flag:
-	shiftright ?o0 = ?status, #6         ; shift left by six
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
+	move ?i0 = ?six
+	branch extractFlagBit
 
 ;-----------------------------------------------------------------------------
 ; extractSG1Flag: extract the SG1 flag bit
@@ -80,9 +90,8 @@ extractSG0Flag:
 ; ?o0 - the SG1 flag value
 ;-----------------------------------------------------------------------------
 extractSG1Flag:
-	shiftright ?o0 = ?status, #7         ; shift left by seven
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
+	move ?i0 = ?seven
+	branch extractFlagBit
 
 
 ;-----------------------------------------------------------------------------
@@ -91,10 +100,8 @@ extractSG1Flag:
 ; ?o0 - the Oscillator flag value
 ;-----------------------------------------------------------------------------
 extractOscillatorFlag:
-	shiftright ?o0 = ?status, #5         ; shift left by five
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
-
+	move ?i0 = ?five
+	branch extractFlagBit
 
 ;-----------------------------------------------------------------------------
 ; extractCpuOffFlag: extract the CpuOff flag bit
@@ -102,9 +109,8 @@ extractOscillatorFlag:
 ; ?o0 - the CpuOff flag value
 ;-----------------------------------------------------------------------------
 extractCpuOffFlag:
-	shiftright ?o0 = ?status, #4         ; shift left by four
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
+	move ?i0 = ?four
+	branch extractFlagBit
 
 ;-----------------------------------------------------------------------------
 ; extractGlobalInterruptEnableFlag: extract the GlobalInterruptEnable flag bit
@@ -112,8 +118,7 @@ extractCpuOffFlag:
 ; ?o0 - the GlobalInterruptEnable flag value
 ;-----------------------------------------------------------------------------
 extractGlobalInterruptEnableFlag:
-	shiftright ?o0 = ?status, #3         ; shift left by three
-	and ?o0 = ?status, ?single-bit-mask  ; mask it with 0x1
-	return
+	move ?i0 = ?three
+	branch extractFlagBit
 
 ; bits 9-15 are marked as reserved!
