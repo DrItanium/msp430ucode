@@ -23,9 +23,10 @@
 ; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;-----------------------------------------------------------------------------
 ; Status register related functions
+;
+; NOTE: bits 9-15 are marked as reserved and aren't extracted!
 ;-----------------------------------------------------------------------------
 .code
-
 ;-----------------------------------------------------------------------------
 ; extractFlagBit: extract a given flag bit
 ; ?i0 - the shift amount
@@ -121,4 +122,29 @@ extractGlobalInterruptEnableFlag:
 	move ?i0 = ?three
 	branch extractFlagBit
 
-; bits 9-15 are marked as reserved!
+
+;-----------------------------------------------------------------------------
+; setFlagBit: extract a given flag bit
+; ?i0 - the position of the bit
+; ?i1 - bit value
+; 
+; NOTE: should not be called by functions outside this file, this is a fragment
+;       of a function that the other extract functions jump to after setting up
+;       arguments.
+;-----------------------------------------------------------------------------
+setFlagBit:
+	push ?l0                                  ; save l0
+	push ?l1                                  ; save l1
+	push ?l2                                  ; save l2
+	shiftleft ?l0 = ?single-bit-mask, ?i0     ; construct the bit mask
+	not ?l0 = ?l0                             ; invert the mask
+	shiftleft ?l1 = ?i1, ?i0                  ; shift the value to the corresponding position
+	and ?l2 = ?status, ?l0                    ; clear out the target bit from status
+	                                          ; but store the result in a different register
+	or ?status = ?l2, ?l1                     ; or the new value together with rest of the staus bit, 
+	                                          ; updating the status register in the process
+	pop ?l2                                   ; restore l2
+	pop ?l1                                   ; restore l1
+	pop ?l0                                   ; restore l0
+	return
+
